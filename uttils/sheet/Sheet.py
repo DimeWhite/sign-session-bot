@@ -69,3 +69,13 @@ class Sheet:
                 self.sheet.update_cell(row_index, duration_index, formula)
                 duration = self.sheet.cell(row_index, duration_index)
                 return row_index - 1, str(duration.value)     
+            
+    def cancelSession(self, user_id: int):
+        cells: list[Cell] = self.sheet.findall(str(user_id))[::-1]
+        for cell in cells:
+            row = self.cellToRow(cell)
+            if row["status"] == "open":
+                row_index = cell.row
+                status_index = self.headers.index("status") + 1
+                self.sheet.update_cell(row_index, status_index, "cancel")
+                break

@@ -1,6 +1,7 @@
-from .session import openSession, closeSession
+from .session import openSession, closeSession, cancelSession
 
 __all__ = [
     "openSession",
-    "closeSession"
+    "closeSession",
+    "cancelSession",
 ]

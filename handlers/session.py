@@ -3,7 +3,7 @@ from aiogram.types import Message, Chat
 from fluent.runtime import FluentLocalization
 from keyboards import startSessionKeyboard, mainKeyboard, closeSessionKeyboard
 from filters import L10nTextFilter
-from services import openSession, closeSession
+from services import openSession, closeSession, cancelSession
 import asyncio
 from aiogram.types import ReplyKeyboardRemove
 
@@ -62,4 +62,16 @@ async def cancelSessionHendler(message: Message, l10n: FluentLocalization,):
         l10n.format_value("cancel-session"),
         parse_mode=None,
         reply_markup=mainKeyboard(l10n),
+    )
+
+@router.message(L10nTextFilter("cancel-recorded-session-button"))
+async def cancelRecordedSessionHendler(message: Message, l10n: FluentLocalization,):
+    await message.answer(
+        l10n.format_value("cancel-session"),
+        parse_mode=None,
+        reply_markup=mainKeyboard(l10n),
+    )
+    
+    asyncio.create_task(
+        asyncio.to_thread(cancelSession, message.chat.id)
     )

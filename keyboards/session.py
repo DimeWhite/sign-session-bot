@@ -16,7 +16,7 @@ def closeSessionKeyboard(l10n: FluentLocalization,) -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text=l10n.format_value("close-session-button"))],
-            [KeyboardButton(text=l10n.format_value("cancel-session-button"))],
+            [KeyboardButton(text=l10n.format_value("cancel-recorded-session-button"))],
         ],
         resize_keyboard=True,
         one_time_keyboard=True
