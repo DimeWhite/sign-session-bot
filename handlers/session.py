@@ -48,6 +48,15 @@ async def closeSessionHendler(
     )
     
     index, duration = await asyncio.to_thread(closeSession, message.chat.id)
+    
+    if not index:
+        await message.answer(
+            l10n.format_value("session-not-found"),
+            parse_mode=None,
+            reply_markup=mainKeyboard(l10n),
+        )
+        return
+        
     answer = l10n.format_value("closed-session").format(number=index, duration=duration)
     
     await message.answer(

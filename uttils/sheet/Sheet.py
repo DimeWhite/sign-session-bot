@@ -32,7 +32,12 @@ class Sheet:
     def startSession(self, user_id: int, username: str, name: str, geo: str) -> None:
         current_day = datetime.now()
         today = current_day.strftime("%Y-%m-%d") 
-        current_time =  current_day.strftime("%H:%M") 
+        current_time =  current_day.strftime("%H:%M")
+        cell: Cell = self.sheet.findall(str(user_id))[::-1][0]
+        row = self.cellToRow(cell)
+        if row["status"] == "open":
+            return 
+            
         self.sheet.append_row([today, user_id, username, name, geo, current_time, "", "" , "", "open"], value_input_option='USER_ENTERED')
     
     
@@ -69,7 +74,10 @@ class Sheet:
                 self.sheet.update_cell(row_index, duration_index, formula)
                 duration = self.sheet.cell(row_index, duration_index)
                 return row_index - 1, str(duration.value)     
-            
+        
+        return 0, ""
+    
+
     def cancelSession(self, user_id: int):
         cells: list[Cell] = self.sheet.findall(str(user_id))[::-1]
         for cell in cells:
