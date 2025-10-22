@@ -10,8 +10,13 @@ from itertools import zip_longest
 from gspread.utils import rowcol_to_a1
 from config_reader import config
 
-
 class Sheet:
+    HEADERS = [
+        "data",	"id", "username",
+        "fullname", "address", "start-time",
+        "end-time", "duration", "comment", "status"
+    ]
+    
     def __init__(self) -> None:    
         SERVICE_FILE = config.google_account_path
         SHEET_NAME = config.sheet_name
@@ -22,7 +27,7 @@ class Sheet:
         creds = Credentials.from_service_account_file(SERVICE_FILE, scopes=SCOPES)
         gc = gspread.authorize(creds)
         self.sheet: Worksheet = gc.open(SHEET_NAME).sheet1
-        self.headers = self.sheet.row_values(1)
+        self.headers = self.HEADERS
     
     def cellToRow(self, cell: Cell):
         row_index = cell.row
