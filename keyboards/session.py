@@ -22,3 +22,12 @@ def closeSessionKeyboard(l10n: FluentLocalization,) -> ReplyKeyboardMarkup:
         one_time_keyboard=True
         )
     
+def closedSessionKeyboard(l10n: FluentLocalization,) -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text=l10n.format_value("comment-session-button"))],
+            [KeyboardButton(text=l10n.format_value("start-session-button"), callback_data="start-session")],
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=True
+        )

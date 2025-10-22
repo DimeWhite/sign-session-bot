@@ -10,5 +10,8 @@ def openSession(chat_data: Chat, geo: list[float]):
 def closeSession(user_id: int) -> Tuple[int, str]:
     return Sheet().closeSession(user_id)
 
+def commentSession(user_id: int, comment: str):
+    Sheet().commentSession(user_id, comment)
+
 def cancelSession(user_id: int):
     Sheet().cancelSession(user_id)

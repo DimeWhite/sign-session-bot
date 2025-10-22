@@ -1,9 +1,9 @@
 from aiogram import Router, F
 from aiogram.types import Message, Chat
 from fluent.runtime import FluentLocalization
-from keyboards import startSessionKeyboard, mainKeyboard, closeSessionKeyboard
+from keyboards import startSessionKeyboard, mainKeyboard, closeSessionKeyboard, closedSessionKeyboard
 from filters import L10nTextFilter
-from services import openSession, closeSession, cancelSession
+from services import openSession, closeSession, cancelSession, commentSession
 import asyncio
 from aiogram.types import ReplyKeyboardRemove
 
@@ -21,7 +21,7 @@ async def startSessionHendler(
     )
     
 @router.message(F.location)
-async def handleLocationHendler(message: Message, l10n: FluentLocalization,):
+async def LocationHendler(message: Message, l10n: FluentLocalization,):
     lat, lon = message.location.latitude, message.location.longitude
     
     chat_data: Chat = message.chat
@@ -62,11 +62,21 @@ async def closeSessionHendler(
     await message.answer(
         answer,
         parse_mode=None,
-        reply_markup=mainKeyboard(l10n),
+        reply_markup=closedSessionKeyboard(l10n),
     )
 
+    
+@router.message(L10nTextFilter("comment-session-button"))
+async def addCommentSessionHendler(message: Message, l10n: FluentLocalization,):
+    await message.answer(
+        l10n.format_value("comment-session"),
+        parse_mode=None,
+        reply_markup=mainKeyboard(l10n),
+    )
+    
+  
 @router.message(L10nTextFilter("cancel-session-button"))
-async def cancelSessionHendler(message: Message, l10n: FluentLocalization,):
+async def cancelSessionHendler(message: Message, l10n: FluentLocalization):
     await message.answer(
         l10n.format_value("cancel-session"),
         parse_mode=None,
@@ -84,3 +94,20 @@ async def cancelRecordedSessionHendler(message: Message, l10n: FluentLocalizatio
     asyncio.create_task(
         asyncio.to_thread(cancelSession, message.chat.id)
     )
+
+@router.message()
+async def sendCommentSessionHendler(message: Message, l10n: FluentLocalization,):
+    if (
+            message.reply_to_message and
+            message.reply_to_message.text == l10n.format_value("comment-session") and
+            message.text
+        ):
+        await message.answer(
+            l10n.format_value("add-comment-session"),
+            parse_mode=None,
+            reply_markup=mainKeyboard(l10n),
+        )
+        
+        asyncio.create_task(
+            asyncio.to_thread(commentSession, message.chat.id, message.text)
+        )

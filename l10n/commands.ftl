@@ -8,3 +8,4 @@ send-geo-button = Отправить место
 
 close-session-button = Закончить встречу
 
+comment-session-button = Оставить комментарий

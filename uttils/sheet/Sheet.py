@@ -5,7 +5,7 @@ from datetime import datetime
 from gspread.cell import Cell
 from gspread.worksheet import Worksheet
 import time 
-from typing import Tuple
+from typing import Tuple, Dict, Any
 from itertools import zip_longest
 from gspread.utils import rowcol_to_a1
 from config_reader import config
@@ -25,65 +25,76 @@ class Sheet:
         self.headers = self.sheet.row_values(1)
     
     def cellToRow(self, cell: Cell):
-        row_values = self.sheet.row_values(cell.row)
+        row_index = cell.row
+        row_values = self.sheet.row_values(row_index)
         row_dict = dict(zip_longest(self.headers, row_values, fillvalue=""))
+        row_dict["_index"] = row_index
         return row_dict
     
+    def getLastUserRow(self, user_id: int) -> Dict[Any, Any]:
+        cells: list[Cell] = self.sheet.findall(str(user_id))
+        if not cells:
+            return {}
+    
+        row = self.cellToRow(cells[-1])
+        
+        return row
+        
     def startSession(self, user_id: int, username: str, name: str, geo: str) -> None:
         current_day = datetime.now()
         today = current_day.strftime("%Y-%m-%d") 
         current_time =  current_day.strftime("%H:%M")
-        cell: Cell = self.sheet.findall(str(user_id))[::-1][0]
-        row = self.cellToRow(cell)
-        if row["status"] == "open":
+        row = self.getLastUserRow(user_id)
+               
+        if row.get("status") == "open":
             return 
             
         self.sheet.append_row([today, user_id, username, name, geo, current_time, "", "" , "", "open"], value_input_option='USER_ENTERED')
     
     
     def closeSession(self, user_id: int) -> Tuple[int, str]:
-        cells: list[Cell] = self.sheet.findall(str(user_id))[::-1]
-        for cell in cells:
-            row = self.cellToRow(cell)
-            if row["status"] == "open":
-                row_index = cell.row
+        row = self.getLastUserRow(user_id)
 
-                status_index = self.headers.index("status") + 1
-                end_time_index = self.headers.index("end-time") + 1
-                start_time_index = self.headers.index("start-time") + 1
-                duration_index = self.headers.index("duration") + 1 
-                
-                current_day = datetime.now()
-                current_time =  current_day.strftime("%H:%M") 
-                
-                self.sheet.update_cells(
-                    [
-                        Cell(row_index, end_time_index, current_time),
-                        Cell(row_index, status_index, "close"),
-                    ], value_input_option='USER_ENTERED')
-                
-                start_col_letter = rowcol_to_a1(row=1, col=start_time_index)[0:-1]
-                end_col_letter = rowcol_to_a1(row=1, col=end_time_index)[0:-1]
-                
-                formula = "={end}{row}-{start}{row}".format(
-                    start=start_col_letter, 
-                    end=end_col_letter, 
-                    row=row_index
-                )
-                     
-                self.sheet.update_cell(row_index, duration_index, formula)
-                duration = self.sheet.cell(row_index, duration_index)
-                return row_index - 1, str(duration.value)     
+        if row.get("status") == "open":            
+            status_index = self.headers.index("status") + 1
+            end_time_index = self.headers.index("end-time") + 1
+            start_time_index = self.headers.index("start-time") + 1
+            duration_index = self.headers.index("duration") + 1 
+            
+            current_day = datetime.now()
+            current_time =  current_day.strftime("%H:%M") 
+            
+            self.sheet.update_cells(
+                [
+                    Cell(row["_index"], end_time_index, current_time),
+                    Cell(row["_index"], status_index, "close"),
+                ], value_input_option='USER_ENTERED')
+            
+            start_col_letter = rowcol_to_a1(row=1, col=start_time_index)[0:-1]
+            end_col_letter = rowcol_to_a1(row=1, col=end_time_index)[0:-1]
+            
+            formula = "={end}{row}-{start}{row}".format(
+                start=start_col_letter, 
+                end=end_col_letter, 
+                row=row["_index"]
+            )
+                 
+            self.sheet.update_cell(row["_index"], duration_index, formula)
+            duration = self.sheet.cell(row["_index"], duration_index)
+            return row["_index"] - 1, str(duration.value)     
         
         return 0, ""
     
+    def commentSession(self, user_id: int, comment: str):
+        row = self.getLastUserRow(user_id)
 
+        if row.get("status") == "close":
+            status_index = self.headers.index("comment") + 1
+            self.sheet.update_cell(row["_index"], status_index, comment)
+    
     def cancelSession(self, user_id: int):
-        cells: list[Cell] = self.sheet.findall(str(user_id))[::-1]
-        for cell in cells:
-            row = self.cellToRow(cell)
-            if row["status"] == "open":
-                row_index = cell.row
-                status_index = self.headers.index("status") + 1
-                self.sheet.update_cell(row_index, status_index, "cancel")
-                break
+        row = self.getLastUserRow(user_id)
+    
+        if row.get("status") == "open":
+            status_index = self.headers.index("status") + 1
+            self.sheet.update_cell(row["_index"], status_index, "cancel")
