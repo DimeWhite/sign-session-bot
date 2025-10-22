@@ -90,7 +90,7 @@ class Sheet:
 
         if row.get("status") == "close":
             status_index = self.headers.index("comment") + 1
-            self.sheet.update_cell(row["_index"], status_index, comment)
+            self.sheet.update_cell(row["_index"], status_index, "'{}".format(comment))
     
     def cancelSession(self, user_id: int):
         row = self.getLastUserRow(user_id)
