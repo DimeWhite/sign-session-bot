@@ -12,7 +12,6 @@ async def cmd_start(
         message: Message,
         l10n: FluentLocalization,
 ):
-    # 
     await message.answer(
         l10n.format_value("cmd-start"),
         parse_mode=None,
