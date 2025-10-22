@@ -6,3 +6,5 @@ google-auth==2.35.0
 pydantic
 pydantic-settings
 python-dotenv
+dadata==25.10.0
+httpx==0.28.1

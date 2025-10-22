@@ -5,7 +5,9 @@ ENV_DIR = ".env"
 
 class Settings(BaseSettings):
     bot_token: SecretStr
+    
     dadata_token: SecretStr
+    dadata_secret: SecretStr
     
     google_account_path: str
     sheet_name: str
