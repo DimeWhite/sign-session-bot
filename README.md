@@ -1,6 +1,7 @@
 # 📌 Telegram Bot with Google Sheets Integration
 
-Асинхронный Telegram бот для работы с пользователями и Google Sheets.  
+Асинхронный Telegram бот для работы с пользователями и Google Sheets.
+
 Позволяет:
 
 - Принимать геолокацию пользователей
@@ -39,9 +40,9 @@ docker-compose build
 
 ## Технологии
 
-Python 3.12.10
-aiogram 3.x
-Google Sheets API (gspread + google-auth)
-Dadata API для обратного геокодирования
-Pydantic-settings для конфигурации
-Docker / Docker Compose
+- Python 3.12.10
+- aiogram 3.x
+- Google Sheets API (gspread + google-auth)
+- Dadata API для обратного геокодирования
+- Pydantic-settings для конфигурации
+- Docker / Docker Compose
