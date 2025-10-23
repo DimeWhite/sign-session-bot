@@ -51,7 +51,6 @@ class Sheet:
         today = current_day.strftime("%Y-%m-%d") 
         current_time =  current_day.strftime("%H:%M")
         row = self.getLastUserRow(user_id)
-        print(row)   
         if row.get("status") == "open":
             return 
             
