@@ -27,13 +27,20 @@ async def LocationHendler(message: Message, l10n: FluentLocalization,):
     chat_data: Chat = message.chat
     
     await message.answer(
+        l10n.format_value("wait-start-session"),
+        parse_mode=None,
+        reply_markup=ReplyKeyboardRemove(selective=True),
+    )
+    await asyncio.to_thread(openSession, chat_data, [lat, lon])
+    
+    await message.answer(
         l10n.format_value("send-geo"),
         parse_mode=None,
         reply_markup=closeSessionKeyboard(l10n),
     )
-    asyncio.create_task(
-        asyncio.to_thread(openSession, chat_data, [lat, lon])
-    )
+    # asyncio.create_task(
+    #    asyncio.to_thread(openSession, chat_data, [lat, lon])
+    # )
 
 @router.message(L10nTextFilter("close-session-button"))
 async def closeSessionHendler(
