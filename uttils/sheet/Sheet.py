@@ -100,6 +100,6 @@ class Sheet:
     def cancelSession(self, user_id: int):
         row = self.getLastUserRow(user_id)
     
-        if row.get("statёus") == "open":
+        if row.get("status") == "open":
             status_index = self.headers.index("status") + 1
             self.sheet.update_cell(row["_index"], status_index, "cancel")
