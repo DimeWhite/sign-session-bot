@@ -3,4 +3,4 @@ venv
 .idea
 __pycache__
 .vscode
-secret-account.json
+secrets/service-account.json
