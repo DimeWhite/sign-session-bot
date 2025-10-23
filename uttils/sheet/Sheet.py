@@ -92,10 +92,11 @@ class Sheet:
     
     def commentSession(self, user_id: int, comment: str):
         row = self.getLastUserRow(user_id)
-
+        
         if row.get("status") == "close":
-            status_index = self.headers.index("comment") + 1
-            self.sheet.update_cell(row["_index"], status_index, "'{}".format(comment))
+            comment_index = self.headers.index("comment") + 1
+            current_comment = row.get("comment", "")
+            self.sheet.update_cell(row["_index"], comment_index, "'{}\n{}".format(current_comment, comment))
     
     def cancelSession(self, user_id: int):
         row = self.getLastUserRow(user_id)
