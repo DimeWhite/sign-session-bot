@@ -37,20 +37,21 @@ class Sheet:
         return row_dict
     
     def getLastUserRow(self, user_id: int) -> Dict[Any, Any]:
-        cells: list[Cell] = self.sheet.findall(str(user_id))
-        if not cells:
-            return {}
-    
-        row = self.cellToRow(cells[-1])
+        user_index = self.headers.index("id") + 1
+        col_values = self.sheet.col_values(user_index)
+        for i, value in enumerate(reversed(col_values), start=1):
+            if str(value) == str(user_id):
+                row_index = len(col_values) - i + 1
+                return self.cellToRow(Cell(row=row_index, col=user_index))
         
-        return row
+        return {}
         
     def startSession(self, user_id: int, username: str, name: str, geo: str) -> None:
         current_day = datetime.now()
         today = current_day.strftime("%Y-%m-%d") 
         current_time =  current_day.strftime("%H:%M")
         row = self.getLastUserRow(user_id)
-               
+        print(row)   
         if row.get("status") == "open":
             return 
             
@@ -100,6 +101,6 @@ class Sheet:
     def cancelSession(self, user_id: int):
         row = self.getLastUserRow(user_id)
     
-        if row.get("status") == "open":
+        if row.get("statёus") == "open":
             status_index = self.headers.index("status") + 1
             self.sheet.update_cell(row["_index"], status_index, "cancel")
