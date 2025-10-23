@@ -35,7 +35,7 @@ docker-compose build
 3. Запускаем контейнер
 
 ```
-   docker-compose up -d
+docker-compose up -d
 ```
 
 ## Технологии
