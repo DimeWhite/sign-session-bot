@@ -4,11 +4,11 @@ import os
 from datetime import datetime
 from gspread.cell import Cell
 from gspread.worksheet import Worksheet
-import time 
 from typing import Tuple, Dict, Any
 from itertools import zip_longest
 from gspread.utils import rowcol_to_a1
 from config_reader import config
+from zoneinfo import ZoneInfo
 
 class Sheet:
     HEADERS = [
@@ -29,6 +29,11 @@ class Sheet:
         self.sheet: Worksheet = gc.open(SHEET_NAME).sheet1
         self.headers = self.HEADERS
     
+    def getCurrentDate(self):
+        moscow_tz = ZoneInfo("Europe/Moscow")
+        current_day = datetime.now(moscow_tz)
+        return current_day
+    
     def cellToRow(self, cell: Cell):
         row_index = cell.row
         row_values = self.sheet.row_values(row_index)
@@ -47,7 +52,7 @@ class Sheet:
         return {}
         
     def startSession(self, user_id: int, username: str, name: str, geo: str) -> None:
-        current_day = datetime.now()
+        current_day = self.getCurrentDate()
         today = current_day.strftime("%Y-%m-%d") 
         current_time =  current_day.strftime("%H:%M")
         row = self.getLastUserRow(user_id)
@@ -66,7 +71,7 @@ class Sheet:
             start_time_index = self.headers.index("start-time") + 1
             duration_index = self.headers.index("duration") + 1 
             
-            current_day = datetime.now()
+            current_day = self.getCurrentDate()
             current_time =  current_day.strftime("%H:%M") 
             
             self.sheet.update_cells(
